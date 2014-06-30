@@ -5,8 +5,8 @@ import requests
 from payzone import exceptions
 
 
-api_base = 'https://paiement.payzone.ma'
-api_version = '002'
+API_BASE = 'https://paiement.payzone.ma'
+API_VERSION = '002'
 
 
 class Customer(object):
@@ -20,6 +20,8 @@ class Customer(object):
 
 class Transaction(object):
     endpoint = "/transaction/"
+    api_base = API_BASE
+    api_version = API_VERSION
 
     def __init__(self, auth, api_base=api_base,
                  api_version=api_version):
@@ -35,7 +37,7 @@ class Transaction(object):
             * orderID
             * currency
             * amount
-            * shippingType
+            * shippingType : (Physical|Virtual)
             * paymentType
             * ctrlRedirectURL
         """
@@ -63,22 +65,24 @@ class Transaction(object):
         url = self.api_base + self.endpoint + merchant_token + "/status"
         return requests.get(url, auth=self.auth).json()
 
-    def dopay_url(self, customer_token):
-        return self.api_base + self.endpoint + customer_token + "/status"
+    @classmethod
+    def get_dopay_url(cls, customer_token):
+        return cls.api_base + cls.endpoint + customer_token + "/dopay"
 
 
 class PayZoneClient(object):
-    def __init__(self, username, password, api_base=api_base,
-                 api_version=api_version ):
+    def __init__(self, username, password, api_base=API_BASE,
+                 api_version=API_VERSION):
         self.api_base = api_base
         self.api_version = api_version
         self.username = username
         self.password = password
 
-    def prepare_transaction(self, **params):
+    @property
+    def transaction(self):
         return Transaction(
-            self.auth(), api_base=api_base, api_version=self.api_version
-        ).prepare(**params)
+            self.auth(), api_base=self.api_base, api_version=self.api_version
+        )
 
     def auth(self):
         return HTTPBasicAuth(self.username, self.password)
