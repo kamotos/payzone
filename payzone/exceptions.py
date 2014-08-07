@@ -4,3 +4,9 @@ class PayzoneError(Exception):
 
 class MissingParameterError(PayzoneError):
     pass
+
+
+class PayzoneAPIError(PayzoneError):
+    """ For errors raised from api.payzone.ma
+    """
+    pass
