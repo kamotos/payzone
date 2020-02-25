@@ -7,7 +7,7 @@ from payzone import exceptions
 
 API_BASE = 'https://api.payzone.ma'
 PAYMENT_BASE = 'https://paiement.payzone.ma'
-PAYMENT_VERSION = '002'
+PAYMENT_VERSION = '002.61'
 
 
 class Customer(object):
@@ -71,6 +71,25 @@ class Transaction(object):
         url = self.api_base + self.endpoint + unicode(transaction_id) + "/capture"
         params = {'amount': amount}
         return self._api_post(url, **params)
+
+    def cancel(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + unicode(transaction_id) + "/cancel"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def refund(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + unicode(transaction_id) + "/refund"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def rebill(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + unicode(transaction_id) + "/rebill"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def info(self, transaction_id):
+        url = self.api_base + self.endpoint + unicode(transaction_id) + "/info"
+        return requests.get(url, auth=self.auth).json()
 
     def _prepare_post_data(self, **params):
         data = {
