@@ -3,6 +3,11 @@
 History
 -------
 
+0.1.3 (2020-02-26)
+---------------------
+
+* Adding credit card authorization capability
+
 0.1.2 (2020-02-25)
 ---------------------
 

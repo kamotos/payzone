@@ -43,6 +43,7 @@ class Transaction(object):
     def _payment_post(self, url, **params):
         data = self._prepare_post_data(**params)
         response = requests.post(url, data=data, auth=self.auth)
+        print(response.text)
         json_response = response.json()
 
         if json_response['code'] == '401':
@@ -66,6 +67,27 @@ class Transaction(object):
         """
         url = self.payment_base + self.endpoint + "prepare"
         return self._payment_post(url, **params)
+
+    def authorize_creditcard(self, **params):
+        """
+        Required fields are:
+            * customerIP
+            * amount
+            * currency
+            * orderID
+            * cardNumber
+            * cardSecurityCode
+            * cardHolderName
+            * cardExpireMonth
+            * cardExpireYear
+        """
+        url = self.payment_base + self.endpoint + "/authorize/creditcard"
+        return self._payment_post(url, **params)
+
+    def capture(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + unicode(transaction_id) + "/capture"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
 
     def capture(self, transaction_id, amount):
         url = self.api_base + self.endpoint + unicode(transaction_id) + "/capture"
