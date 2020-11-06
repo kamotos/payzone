@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class PayzoneError(Exception):
     pass
 
@@ -7,6 +8,5 @@ class MissingParameterError(PayzoneError):
 
 
 class PayzoneAPIError(PayzoneError):
-    """ For errors raised from api.payzone.ma
-    """
+    """ For errors raised from api.payzone.ma """
     pass
