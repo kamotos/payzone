@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 from requests.auth import HTTPBasicAuth
 
@@ -6,8 +8,8 @@ from payzone import exceptions
 
 
 API_BASE = 'https://api.payzone.ma'
-PAYMENT_BASE = 'https://paiement.payzone.ma'
-PAYMENT_VERSION = '002'
+API_PAYMENT_BASE = 'https://paiement.payzone.ma'
+API_PAYMENT_VERSION = '002.61'
 
 
 class Customer(object):
@@ -22,11 +24,8 @@ class Customer(object):
 class Transaction(object):
     api_base = API_BASE
     endpoint = "/transaction/"
-    payment_base = PAYMENT_BASE
-    payment_version = PAYMENT_VERSION
 
-    def __init__(self, auth, payment_base=payment_base,
-                 payment_version=payment_version):
+    def __init__(self, auth, payment_base, payment_version):
         self.auth = auth
         self.payment_base = payment_base
         self.payment_version = payment_version
@@ -67,10 +66,45 @@ class Transaction(object):
         url = self.payment_base + self.endpoint + "prepare"
         return self._payment_post(url, **params)
 
+    def authorize_creditcard(self, **params):
+        """
+        Required fields are:
+            * customerIP
+            * amount
+            * currency
+            * orderID
+            * cardNumber
+            * cardSecurityCode
+            * cardHolderName
+            * cardExpireMonth
+            * cardExpireYear
+        """
+        url = self.payment_base + self.endpoint + "/authorize/creditcard"
+        return self._payment_post(url, **params)
+
     def capture(self, transaction_id, amount):
-        url = self.api_base + self.endpoint + unicode(transaction_id) + "/capture"
+        url = self.api_base + self.endpoint + str(transaction_id) + "/capture"
         params = {'amount': amount}
         return self._api_post(url, **params)
+
+    def cancel(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + str(transaction_id) + "/cancel"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def refund(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + str(transaction_id) + "/refund"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def rebill(self, transaction_id, amount):
+        url = self.api_base + self.endpoint + str(transaction_id) + "/rebill"
+        params = {'amount': amount}
+        return self._api_post(url, **params)
+
+    def info(self, transaction_id):
+        url = self.api_base + self.endpoint + str(transaction_id) + "/info"
+        return requests.get(url, auth=self.auth).json()
 
     def _prepare_post_data(self, **params):
         data = {
@@ -102,8 +136,8 @@ class Transaction(object):
 
 
 class PayZoneClient(object):
-    def __init__(self, username, password, payment_base=PAYMENT_BASE,
-                 payment_version=PAYMENT_VERSION, api_base=API_BASE):
+    def __init__(self, username, password, payment_base=API_PAYMENT_BASE,
+                 payment_version=API_PAYMENT_VERSION, api_base=API_BASE):
         self.payment_base = payment_base
         self.payment_version = payment_version
         self.username = username

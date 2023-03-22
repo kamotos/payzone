@@ -10,4 +10,4 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Edwin Polycarpe <edwin.polycarpe@gmail.com>
